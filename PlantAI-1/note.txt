@@ -1,0 +1,8 @@
+Dataset source - https://www.kaggle.com/datasets/kacpergregorowicz/house-plant-species
+
+Models:
+- microsoft/resnet-50
+- microsoft/swinv2-tiny-patch4-window16-256
+- google/vit-base-patch16-224
+- apple/mobilevit-small
+

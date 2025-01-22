@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plant Recognition</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header>
+        <h1>AI Plant Recognition</h1>
+    </header>
+
+    <div class="container">
+        <form action="/predict" method="POST" enctype="multipart/form-data">
+            <label for="image">Upload a plant image:</label>
+            <input type="file" name="image" required><br><br>
+
+            <label for="model_choice">Choose model:</label>
+            <select name="model_choice" required>
+                <option value="MobileViT">MobileViT</option>
+                <option value="Swin">Swin Transformer</option>
+                <option value="ViT">ViT (Vision Transformer)</option>
+                <option value="Trained ViT">Trained ViT</option>
+                <option value="ResNet">ResNet-50</option>
+            </select><br><br>
+
+            <input type="submit" value="Submit">
+        </form>
+
+        <div id="result">
+            <!-- Prediction results will be shown here after submission -->
+        </div>
+
+        <div id="error" class="error" style="display:none;">
+            <p id="error-message"></p>
+        </div>
+    </div>
+
+    <script>
+        // Handle the response from Flask and display results
+        const form = document.querySelector('form');
+        const resultDiv = document.getElementById('result');
+        const errorDiv = document.getElementById('error');
+        const errorMessage = document.getElementById('error-message');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Clear previous results and errors
+            resultDiv.innerHTML = '';
+            errorDiv.style.display = 'none';
+
+            const formData = new FormData(form);
+            const response = await fetch('/predict', {
+                method: 'POST',
+                body: formData,
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // Display prediction result
+                resultDiv.innerHTML = `
+                    <h2>Prediction: ${data.prediction}</h2>
+                    <p>Confidence: ${data.confidence}</p>
+                    <p>Time taken: ${data.time_taken}</p>
+                `;
+            } else {
+                // Display error message
+                errorDiv.style.display = 'block';
+                errorMessage.textContent = data.error || 'An error occurred while processing the image.';
+            }
+        });
+    </script>
+</body>
+</html>
